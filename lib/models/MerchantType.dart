@@ -1,0 +1,4 @@
+enum MerchantType {
+  WHOLESALER,
+  SARIOWNER
+}

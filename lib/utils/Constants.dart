@@ -18,6 +18,7 @@ const String kToken =
 /// endpoints
 const String kMerchantList = 'merchant/list';
 const String kSearchRoute = 'merchant/search';
+const String kMerchantCategoryList = "merchant/category/list";
 const String kMerchantSearchById = 'merchant?id=';
 const String kGetProductListRoute = 'product/list';
 const String kGetCategoryListRoute = 'product/category/list';

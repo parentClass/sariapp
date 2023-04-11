@@ -4,9 +4,11 @@ import 'dart:io';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:http/http.dart' as http;
 import 'package:sariapp/models/Merchant.dart';
+import 'package:sariapp/models/MerchantCategory.dart';
 import 'package:sariapp/models/Product.dart';
 import 'package:sariapp/models/ProductCategory.dart';
 import 'package:sariapp/models/ProductSubcategory.dart';
+import 'package:sariapp/services/MerchantCategoryService.dart';
 import 'package:sariapp/services/MerchantService.dart';
 import 'package:sariapp/services/ProductCategoryService.dart';
 import 'package:sariapp/services/ProductService.dart';
@@ -40,6 +42,33 @@ class ApiService {
       } else {
         // no search result found
         Helper.showInfoToast(context, "No stores yet.");
+      }
+    });
+  }
+
+  static void getMerchantCategoryList(context) async {
+    Uri sariUrl = _getParsedSariEndpoint(
+        "$kLocalHost/$kApiVersion/$kMerchantCategoryList?maxResult=100&page=0");
+
+    // start loading
+    EasyLoading.show(status: 'Loading...', maskType: EasyLoadingMaskType.black);
+
+    http.Response sariResponse =
+        await http.get(sariUrl, headers: _apiHeaders(false));
+
+    _handleApiResponse(context, sariResponse.statusCode, () {
+      var decodedSearch = jsonDecode(sariResponse.body)['body'];
+      var searchResultCount = decodedSearch['totalPages'];
+      var searchContent = decodedSearch['content'];
+      List<MerchantCategory> categories = [];
+
+      if (searchResultCount > 0) {
+        for (var category in searchContent) {
+          categories.add(MerchantCategory.fromJson(category));
+        }
+
+        MerchantCategoryService.setProviderMerchantCategoryList(
+            context, categories);
       }
     });
   }

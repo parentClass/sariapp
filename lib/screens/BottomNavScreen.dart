@@ -20,22 +20,22 @@ class _BottomNavScreenState extends State<BottomNavScreen> {
   /// Iterator for the tabs
   late PageController _pageController;
 
-  List<DotNavigationBarItem> _buildUpBottomNavItems(context) {
-    List<DotNavigationBarItem> items = [];
+  List<BottomNavigationBarItem> _buildUpBottomNavItems(context) {
+    List<BottomNavigationBarItem> items = [];
 
     // add home
-    items.add(DotNavigationBarItem(icon: const Icon(LineIcons.home)));
+    items.add(const BottomNavigationBarItem(label: "Home", icon: Icon(LineIcons.home)));
     
     // add store
     if(MerchantService.getProviderActiveMerchant(context).id != "") {
-      items.add(DotNavigationBarItem(icon: const Icon(LineIcons.store)));
+      items.add(const BottomNavigationBarItem(label: "Store", icon: Icon(LineIcons.store)));
     }
 
     // add cashier
-    items.add(DotNavigationBarItem(icon: const Icon(LineIcons.cashRegister)));
+    items.add(const BottomNavigationBarItem(label: "Cashier", icon: Icon(LineIcons.wallet)));
 
     // add feature
-    items.add(DotNavigationBarItem(icon: const Icon(LineIcons.bars)));
+    items.add(const BottomNavigationBarItem(label: "Menu", icon: Icon(LineIcons.bars)));
 
     return items;
   }
@@ -54,13 +54,10 @@ class _BottomNavScreenState extends State<BottomNavScreen> {
             controller: Provider.of<RoutingNav>(context).pageController,
             physics: const NeverScrollableScrollPhysics(),
             children: RoutingService(context: context).bottomRouteList),
-        bottomNavigationBar: DotNavigationBar(
+        bottomNavigationBar: BottomNavigationBar(
             backgroundColor: HexColor(kGunmetalColor),
             selectedItemColor: HexColor(kGoldWebColor),
             unselectedItemColor: HexColor(kSariWhiteColor),
-            enablePaddingAnimation: false,
-            enableFloatingNavBar: true,
-            paddingR: const EdgeInsets.all(10.0),
             items: _buildUpBottomNavItems(context),
             currentIndex: Provider.of<RoutingNav>(context).pageIndex,
             onTap: (index) => Helper.changeScreen(context, index)),

@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:line_icons/line_icon.dart';
 import 'package:sariapp/models/Merchant.dart';
+import 'package:sariapp/models/MerchantCategory.dart';
 import 'package:sariapp/screens/SearchScreen.dart';
 import 'package:sariapp/screens/StoreScreen.dart';
 import 'package:sariapp/services/ApiService.dart';
+import 'package:sariapp/services/MerchantCategoryService.dart';
 import 'package:sariapp/services/MerchantService.dart';
 import 'package:sariapp/services/RoutingService.dart';
 import 'package:sariapp/utils/Constants.dart';
@@ -25,6 +27,7 @@ class _HomeScreenState extends State<HomeScreen> {
   late TextEditingController _searchTextFieldController;
 
   List<Merchant> _merchantList = [];
+  List<MerchantCategory> _merchantCategoryList = [];
 
   Widget _buildUpSearchBar() {
     return Center(
@@ -170,32 +173,59 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildUpStoreCategories() {
+    List<Widget> merchantCategory = [];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text("Categories", style: TextStyle(fontWeight: FontWeight.w500)),
         const SizedBox(height: 15.0),
-        ConstrainedBox(
-            constraints: BoxConstraints.loose(
-                Size(MediaQuery.of(context).size.width, 120.0)),
-            child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Column(children: const [
-                    Text("category# 1"),
-                    Text("category# 2"),
-                    Text("category# 3"),
-                    Text("category# 4"),
-                    Text("category# 5")
-                  ]),
-                  Column(children: const [
-                    Text("category# 6"),
-                    Text("category# 7"),
-                    Text("category# 8"),
-                    Text("category# 9"),
-                    Text("category# 10")
-                  ])
-                ]))
+        (_merchantCategoryList.isNotEmpty)
+            ? ConstrainedBox(
+                constraints: BoxConstraints.loose(
+                    Size(MediaQuery.of(context).size.width, 120.0)),
+                child: Swiper(
+                  layout: SwiperLayout.STACK,
+                  itemWidth: MediaQuery.of(context).size.width * 0.5,
+                  itemBuilder: (c, index) {
+                    return GestureDetector(
+                      child: Card(
+                          elevation: 5.0,
+                          color: HexColor(kSariWhiteColor),
+                          child: Padding(
+                              padding: const EdgeInsets.all(15.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  LineIcon.star(
+                                    color: HexColor(kGunmetalColor),
+                                    size: 12.0,
+                                  ),
+                                  Wrap(
+                                    direction: Axis.vertical,
+                                    children: [
+                                      Text(
+                                          _merchantCategoryList
+                                              .elementAt(index)
+                                              .label,
+                                          style: TextStyle(
+                                              color: HexColor(kGunmetalColor)))
+                                    ],
+                                  ),
+                                ],
+                              ))),
+                      onTap: () {
+                        print("asd");
+                      },
+                    );
+                  },
+                  itemCount: _merchantCategoryList.length,
+                ),
+              )
+            : const Center(
+                child: Text("No categories found"),
+              )
       ],
     );
   }
@@ -213,6 +243,7 @@ class _HomeScreenState extends State<HomeScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       // api calls
       ApiService.getMerchantList(context);
+      ApiService.getMerchantCategoryList(context);
     });
   }
 
@@ -221,6 +252,8 @@ class _HomeScreenState extends State<HomeScreen> {
     super.didChangeDependencies();
 
     _merchantList = MerchantService.getProviderMerchantList(context);
+    _merchantCategoryList =
+        MerchantCategoryService.getMerchantCategoryList(context);
   }
 
   @override
